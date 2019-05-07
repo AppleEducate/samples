@@ -5,11 +5,17 @@ grow your Flutter skills. Some are maintained here by the Flutter team,
 but many have been created by the Flutter community and are kept in other repos
 in and out of GitHub.
 
-This is not an exhaustive list of samples, and just because because a project
+This is not an exhaustive list of samples, and just because a project
 isn't listed here doesn't mean that it's not worth exploring. Similarly, while
 the Flutter team works to keep this list up to date, there are plenty of others
 created by the community, such as
 [Awesome Flutter](https://github.com/Solido/awesome-flutter) from @Solido.
+
+***Please don't submit pull requests directly updating this file. While we're
+always happy to learn of new samples from the community, we need
+to keep this file small. There are plenty of user-maintained indices (like
+[Awesome Flutter](https://github.com/Solido/awesome-flutter)) that are meant to
+be exhaustive, and those are great places for submitting your own work.***
 
 ## How-to Collections
 
@@ -43,12 +49,31 @@ start.
 A simple app showing three different approaches to deserializing JSON:
 hand-written constructors, `json_serializable`, and `built_value`.
 
+#### [scoped_model_counter](scoped_model_counter) _(Flutter team)_
+
+The simplest possible app (the counter) using `scoped_model`
+for state management.
+
 ## UI
+
+#### [Veggie Seasons](veggieseasons) _(Flutter team)_
+
+[Available on the App Store!](https://itunes.apple.com/is/app/veggie-seasons/id1450855435)
+
+Veggie Seasons is a published iOS app that displays seasonality, vitamin
+content, and trivia for a bunch of different fruits and veggies. If you're
+interested in learning how to use Flutter's
+[Cupertino](https://flutter.dev/docs/development/ui/widgets/cupertino) package
+to build interfaces for iOS, it's a great place to start.
 
 #### [Flutter UI Kit](https://github.com/iampawan/Flutter-UI-Kit) [![GitHub stars](https://img.shields.io/github/stars/iampawan/Flutter-UI-Kit.svg?style=social&label=Star)](https://github.com/iampawan/Flutter-UI-Kit) [![GitHub forks](https://img.shields.io/github/forks/iampawan/Flutter-UI-Kit.svg?style=social&label=Fork)](https://github.com/iampawan/Flutter-UI-Kit/fork)
 Another sample from Flutter GDE Pawan Kumar, this repo includes a variety of
 polished UI examples.
 
+#### [FlutterPlayground](https://github.com/ibhavikmakwana/FlutterPlayground) [![GitHub stars](https://img.shields.io/github/stars/ibhavikmakwana/FlutterPlayground.svg?style=social&label=Star)](https://github.com/ibhavikmakwana/FlutterPlayground) [![GitHub forks](https://img.shields.io/github/forks/ibhavikmakwana/FlutterPlayground.svg?style=social&label=Fork)](https://github.com/ibhavikmakwana/FlutterPlayground/fork)
+
+A repo full of short, specific examples (with animated screenshots!) showing
+commonly used widgets and how to put them to work.
 
 #### [Flutter Challenges](https://github.com/matthew-carroll?tab=repositories&q=flutter_ui_challenge)
 More a GitHub search result than a single repo, Matt Carroll's Flutter UI

@@ -11,9 +11,9 @@ class PlaceDetails extends StatefulWidget {
     @required this.place,
     @required this.onChanged,
     Key key,
-  }) : assert(place != null),
-       assert(onChanged != null),
-       super(key: key);
+  })  : assert(place != null),
+        assert(onChanged != null),
+        super(key: key);
 
   final Place place;
   final ValueChanged<Place> onChanged;
@@ -23,9 +23,9 @@ class PlaceDetails extends StatefulWidget {
 }
 
 class PlaceDetailsState extends State<PlaceDetails> {
-
   Place _place;
   GoogleMapController _mapController;
+  final Set<Marker> _markers = {};
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -40,7 +40,12 @@ class PlaceDetailsState extends State<PlaceDetails> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    _mapController.addMarker(MarkerOptions(position: _place.latLng));
+    setState(() {
+      _markers.add(Marker(
+        markerId: MarkerId(_place.latLng.toString()),
+        position: _place.latLng,
+      ));
+    });
   }
 
   Widget _detailsBody() {
@@ -75,6 +80,7 @@ class PlaceDetailsState extends State<PlaceDetails> {
           center: _place.latLng,
           mapController: _mapController,
           onMapCreated: _onMapCreated,
+          markers: _markers,
         ),
         const _Reviews(),
       ],
@@ -115,9 +121,9 @@ class _NameTextField extends StatelessWidget {
     @required this.controller,
     @required this.onChanged,
     Key key,
-  }) : assert(controller != null),
-       assert(onChanged != null),
-       super(key: key);
+  })  : assert(controller != null),
+        assert(onChanged != null),
+        super(key: key);
 
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
@@ -147,9 +153,9 @@ class _DescriptionTextField extends StatelessWidget {
     @required this.controller,
     @required this.onChanged,
     Key key,
-  }) : assert(controller != null),
-       assert(onChanged != null),
-       super(key: key);
+  })  : assert(controller != null),
+        assert(onChanged != null),
+        super(key: key);
 
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
@@ -180,9 +186,9 @@ class _StarBar extends StatelessWidget {
     @required this.rating,
     @required this.onChanged,
     Key key,
-  }) : assert(rating != null && rating >= 0 && rating <= maxStars),
-       assert(onChanged != null),
-       super(key: key);
+  })  : assert(rating != null && rating >= 0 && rating <= maxStars),
+        assert(onChanged != null),
+        super(key: key);
 
   static const int maxStars = 5;
   final int rating;
@@ -211,14 +217,16 @@ class _Map extends StatelessWidget {
     @required this.center,
     @required this.mapController,
     @required this.onMapCreated,
+    @required this.markers,
     Key key,
-  }) : assert(center != null),
-       assert(onMapCreated != null),
-       super(key: key);
+  })  : assert(center != null),
+        assert(onMapCreated != null),
+        super(key: key);
 
   final LatLng center;
   final GoogleMapController mapController;
   final ArgumentCallback<GoogleMapController> onMapCreated;
+  final Set<Marker> markers;
 
   @override
   Widget build(BuildContext context) {
@@ -230,16 +238,15 @@ class _Map extends StatelessWidget {
         height: 240.0,
         child: GoogleMap(
           onMapCreated: onMapCreated,
-          options: GoogleMapOptions(
-            cameraPosition: CameraPosition(
-              target: center,
-              zoom: 16.0,
-            ),
-            zoomGesturesEnabled: false,
-            rotateGesturesEnabled: false,
-            tiltGesturesEnabled: false,
-            scrollGesturesEnabled: false,
+          initialCameraPosition: CameraPosition(
+            target: center,
+            zoom: 16.0,
           ),
+          markers: markers,
+          zoomGesturesEnabled: false,
+          rotateGesturesEnabled: false,
+          tiltGesturesEnabled: false,
+          scrollGesturesEnabled: false,
         ),
       ),
     );
@@ -326,7 +333,9 @@ class _Reviews extends StatelessWidget {
           ),
         ),
         Column(
-          children: StubData.reviewStrings.map((reviewText) => _buildSingleReview(reviewText)).toList(),
+          children: StubData.reviewStrings
+              .map((reviewText) => _buildSingleReview(reviewText))
+              .toList(),
         ),
       ],
     );

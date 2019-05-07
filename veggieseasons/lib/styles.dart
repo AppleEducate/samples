@@ -4,23 +4,14 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:veggieseasons/data/veggie.dart';
 
 abstract class Styles {
-  static String createHeroTag(Veggie veggie) => 'veggie_hero_${veggie.name}';
-
   static const headlineText = TextStyle(
     color: Color.fromRGBO(0, 0, 0, 0.8),
     fontFamily: 'NotoSans',
     fontSize: 32.0,
-    fontStyle: FontStyle.normal,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const subheadText = TextStyle(
-    color: Color.fromRGBO(240, 240, 240, 1.0),
-    fontFamily: 'NotoSans',
-    fontSize: 30.0,
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.bold,
   );
@@ -49,22 +40,6 @@ abstract class Styles {
     fontWeight: FontWeight.normal,
   );
 
-  static const activeSeasonText = TextStyle(
-    color: Color.fromRGBO(255, 255, 255, 0.9),
-    fontFamily: 'NotoSans',
-    fontSize: 24.0,
-    fontStyle: FontStyle.normal,
-    fontWeight: FontWeight.normal,
-  );
-
-  static const inactiveSeasonText = TextStyle(
-    color: Color.fromRGBO(80, 80, 80, 0.9),
-    fontFamily: 'NotoSans',
-    fontSize: 24.0,
-    fontStyle: FontStyle.normal,
-    fontWeight: FontWeight.normal,
-  );
-
   static const cardTitleText = TextStyle(
     color: Color.fromRGBO(0, 0, 0, 0.9),
     fontFamily: 'NotoSans',
@@ -89,15 +64,113 @@ abstract class Styles {
     fontWeight: FontWeight.normal,
   );
 
+  static const detailsTitleText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 30.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const detailsPreferredCategoryText = TextStyle(
+    color: Color.fromRGBO(0, 80, 0, 0.7),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const detailsCategoryText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.7),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
+  static const detailsDescriptionText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
+  static const detailsBoldDescriptionText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const detailsServingHeaderText = TextStyle(
+    color: Color.fromRGBO(176, 176, 176, 1.0),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const detailsServingLabelText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const detailsServingValueText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
+  static const detailsServingNoteText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.normal,
+  );
+
+  static const triviaFinishedTitleText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 32.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
+  static const triviaFinishedText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 16.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
+  static const triviaFinishedBigText = TextStyle(
+    color: Color.fromRGBO(0, 0, 0, 0.9),
+    fontFamily: 'NotoSans',
+    fontSize: 48.0,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
   static const appBackground = Color(0xffd0d0d0);
 
   static const scaffoldBackground = Color(0xfff0f0f0);
 
-  static const buttonColor = Color(0xff007aff);
-
-  static const buttonIconColor = Color(0xffffffff);
-
   static const searchBackground = Color(0xffe0e0e0);
+
+  static const frostedBackground = Color(0xccf8f8f8);
+
+  static const closeButtonUnpressed = Color(0xff101010);
+
+  static const closeButtonPressed = Color(0xff808080);
 
   static const TextStyle searchText = TextStyle(
     color: Color.fromRGBO(0, 0, 0, 1.0),
@@ -118,7 +191,23 @@ abstract class Styles {
     Season.autumn: Color(0xff724913),
   };
 
-  static const seasonBorder = const Border(
+  // While handy, some of the Font Awesome icons sometimes bleed over their
+  // allotted bounds. This padding is used to adjust for that.
+  static const seasonIconPadding = {
+    Season.winter: const EdgeInsets.only(right: 0.0),
+    Season.spring: const EdgeInsets.only(right: 4.0),
+    Season.summer: const EdgeInsets.only(right: 6.0),
+    Season.autumn: const EdgeInsets.only(right: 0.0),
+  };
+
+  static const seasonIconData = {
+    Season.winter: FontAwesomeIcons.snowflake,
+    Season.spring: FontAwesomeIcons.leaf,
+    Season.summer: FontAwesomeIcons.umbrellaBeach,
+    Season.autumn: FontAwesomeIcons.canadianMapleLeaf,
+  };
+
+  static const seasonBorder = Border(
     top: BorderSide(color: Color(0xff606060)),
     left: BorderSide(color: Color(0xff606060)),
     bottom: BorderSide(color: Color(0xff606060)),
@@ -178,4 +267,11 @@ abstract class Styles {
     fontFamily: CupertinoIcons.iconFont,
     fontPackage: CupertinoIcons.iconFontPackage,
   );
+
+  static const servingInfoBorderColor = Color(0xffb0b0b0);
+
+    static const ColorFilter desaturatedColorFilter =
+      // 222222 is a random color that has low color saturation.
+      ColorFilter.mode(Color(0xFF222222), BlendMode.saturation);
+ 
 }

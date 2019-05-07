@@ -35,8 +35,10 @@ class VeggieHeadline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-          CupertinoPageRoute(builder: (context) => DetailsScreen(veggie.id))),
+      onTap: () => Navigator.of(context).push(CupertinoPageRoute(
+            builder: (context) => DetailsScreen(veggie.id),
+            fullscreenDialog: true,
+          )),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,6 +49,7 @@ class VeggieHeadline extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0),
               child: Image.asset(
                 veggie.imageAssetPath,
+                semanticLabel: 'An icon showing ${veggie.name}',
                 fit: BoxFit.fitWidth,
               ),
             ),

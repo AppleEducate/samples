@@ -5,120 +5,180 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:veggieseasons/data/model.dart';
+import 'package:veggieseasons/data/app_state.dart';
+import 'package:veggieseasons/data/preferences.dart';
 import 'package:veggieseasons/data/veggie.dart';
 import 'package:veggieseasons/styles.dart';
+import 'package:veggieseasons/widgets/close_button.dart';
+import 'package:veggieseasons/widgets/trivia.dart';
 
-/// A circular widget that represents a season of the year.
-///
-/// The season can be displayed as a valid harvest season or one during which a
-/// particular veggie cannot be harvested. Bright colors are used in the first
-/// case, and grays in the latter.
-class SeasonCircle extends StatelessWidget {
-  SeasonCircle(this.season, this.isHarvestTime);
+class ServingInfoChart extends StatelessWidget {
+  const ServingInfoChart(this.veggie, this.prefs);
 
-  /// Season to be displayed by this widget.
-  final Season season;
+  final Veggie veggie;
 
-  /// Whether or not [season] should be presented as a valid harvest season.
-  final bool isHarvestTime;
+  final Preferences prefs;
 
-  String get _firstChars {
-    return '${season.toString().substring(7, 8).toUpperCase()}'
-        '${season.toString().substring(8, 9)}';
+  // Creates a [Text] widget to display a veggie's "percentage of your daily
+  // value of this vitamin" data adjusted for the user's preferred calorie
+  // target.
+  Widget _buildVitaminText(int standardPercentage, Future<int> targetCalories) {
+    return FutureBuilder(
+      future: targetCalories,
+      builder: (context, snapshot) {
+        final target = snapshot?.data ?? 2000;
+        final percent = standardPercentage * 2000 ~/ target;
+
+        return Text(
+          '$percent% DV',
+          textAlign: TextAlign.end,
+          style: Styles.detailsServingValueText,
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: isHarvestTime
-              ? Styles.seasonColors[season]
-              : Styles.transparentColor,
-          borderRadius: BorderRadius.circular(25.0),
-          border: Styles.seasonBorder,
-        ),
-        child: SizedBox(
-          height: 50.0,
-          width: 50.0,
-          child: Center(
+    return Column(
+      children: [
+        SizedBox(height: 16.0),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 9.0,
+              bottom: 4.0,
+            ),
             child: Text(
-              _firstChars,
-              style: isHarvestTime
-                  ? Styles.activeSeasonText
-                  : Styles.inactiveSeasonText,
+              'Serving info',
+              style: Styles.detailsServingHeaderText,
             ),
           ),
         ),
-      ),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Styles.servingInfoBorderColor),
+          ),
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Table(
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          'Serving size:',
+                          style: Styles.detailsServingLabelText,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          veggie.servingSize,
+                          textAlign: TextAlign.end,
+                          style: Styles.detailsServingValueText,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          'Calories:',
+                          style: Styles.detailsServingLabelText,
+                        ),
+                      ),
+                      TableCell(
+                        child: Text(
+                          '${veggie.caloriesPerServing} kCal',
+                          textAlign: TextAlign.end,
+                          style: Styles.detailsServingValueText,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          'Vitamin A:',
+                          style: Styles.detailsServingLabelText,
+                        ),
+                      ),
+                      TableCell(
+                        child: _buildVitaminText(
+                          veggie.vitaminAPercentage,
+                          prefs.desiredCalories,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          'Vitamin C:',
+                          style: Styles.detailsServingLabelText,
+                        ),
+                      ),
+                      TableCell(
+                        child: _buildVitaminText(
+                          veggie.vitaminCPercentage,
+                          prefs.desiredCalories,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: FutureBuilder(
+                  future: prefs.desiredCalories,
+                  builder: (context, snapshot) {
+                    return Text(
+                      'Percent daily values based on a diet of ' +
+                          '${snapshot?.data ?? '2,000'} calories.',
+                      style: Styles.detailsServingNoteText,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 }
 
-class DetailsScreen extends StatelessWidget {
+class InfoView extends StatelessWidget {
   final int id;
 
-  DetailsScreen(this.id);
+  const InfoView(this.id);
 
-  Widget _createFavoriteButton(bool isFav, VoidCallback onPressed) {
-    return CupertinoButton(
-      color: Styles.buttonColor,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isFav ? Styles.checkedIcon : Styles.uncheckedIcon,
-            color: Styles.buttonIconColor,
+  Widget build(BuildContext context) {
+    final appState = ScopedModel.of<AppState>(context, rebuildOnChange: true);
+    final prefs = ScopedModel.of<Preferences>(context, rebuildOnChange: true);
+    final veggie = appState.getVeggie(id);
+
+    final seasonIcons = <Widget>[];
+
+    for (Season season in veggie.seasons) {
+      seasonIcons.addAll([
+        SizedBox(width: 12.0),
+        Padding(
+          padding: Styles.seasonIconPadding[season],
+          child: Icon(
+            Styles.seasonIconData[season],
+            semanticLabel: seasonNames[season],
+            color: Styles.seasonColors[season],
           ),
-          SizedBox(width: 4.0),
-          Text(isFav ? 'Saved to Garden' : 'Save to Garden'),
-        ],
-      ),
-      onPressed: onPressed,
-    );
-  }
-
-  Widget _createHeader(AppState model) {
-    final veggie = model.getVeggie(id);
-
-    return SizedBox(
-      height: 200.0,
-      child: Stack(
-        children: [
-          Positioned(
-            right: 0.0,
-            left: 0.0,
-            child: Image.asset(
-              veggie.imageAssetPath,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned(
-            bottom: 0.0,
-            left: 0.0,
-            right: 0.0,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: Styles.shadowGradient,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 50.0, 16.0, 16.0),
-                child: Text(
-                  veggie.name,
-                  style: Styles.subheadText,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _createDetails(AppState model) {
-    final veggie = model.getVeggie(id);
+        ),
+      ]);
+    }
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -127,31 +187,90 @@ class DetailsScreen extends StatelessWidget {
         children: [
           Row(
             mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              FutureBuilder(
+                future: prefs.preferredCategories,
+                builder: (context, snapshot) {
+                  return Text(
+                    veggie.categoryName.toUpperCase(),
+                    style: (snapshot.hasData &&
+                            snapshot.data.contains(veggie.category))
+                        ? Styles.detailsPreferredCategoryText
+                        : Styles.detailsCategoryText,
+                  );
+                },
+              ),
+              Spacer(),
+            ]..addAll(seasonIcons),
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            veggie.name,
+            style: Styles.detailsTitleText,
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            veggie.shortDescription,
+            style: Styles.detailsDescriptionText,
+          ),
+          ServingInfoChart(veggie, prefs),
+          SizedBox(height: 24.0),
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Wrap(
-                children: Season.values.map((s) {
-                  return SeasonCircle(s, veggie.seasons.contains(s));
-                }).toList(),
+              CupertinoSwitch(
+                value: veggie.isFavorite,
+                onChanged: (value) {
+                  appState.setFavorite(id, value);
+                },
               ),
               SizedBox(width: 8.0),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    veggieCategoryNames[veggie.category].toUpperCase(),
-                    style: Styles.minorText,
-                  ),
-                ),
-              ),
+              Text('Save to Garden'),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Text(veggie.shortDescription),
+        ],
+      ),
+    );
+  }
+}
+
+class DetailsScreen extends StatefulWidget {
+  final int id;
+
+  DetailsScreen(this.id);
+
+  @override
+  _DetailsScreenState createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  int _selectedViewIndex = 0;
+
+  Widget _buildHeader(BuildContext context, AppState model) {
+    final veggie = model.getVeggie(widget.id);
+
+    return SizedBox(
+      height: 150.0,
+      child: Stack(
+        children: [
+          Positioned(
+            right: 0.0,
+            left: 0.0,
+            child: Image.asset(
+              veggie.imageAssetPath,
+              fit: BoxFit.cover,
+              semanticLabel: 'A background image of ${veggie.name}',
+            ),
           ),
-          _createFavoriteButton(veggie.isFavorite, () {
-            model.toggleFavorite(veggie.id);
-          }),
+          Positioned(
+            top: 16.0,
+            left: 16.0,
+            child: SafeArea(
+              child: CloseButton(() {
+                Navigator.of(context).pop();
+              }),
+            ),
+          ),
         ],
       ),
     );
@@ -159,17 +278,33 @@ class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = ScopedModel.of<AppState>(context, rebuildOnChange: true);
+    final appState = ScopedModel.of<AppState>(context, rebuildOnChange: true);
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Details'),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _createHeader(model),
-          _createDetails(model),
+          _buildHeader(context, appState),
+          Expanded(
+            child: ListView(
+              children: [
+                CupertinoSegmentedControl(
+                  children: {
+                    0: Text('Facts & Info'),
+                    1: Text('Trivia'),
+                  },
+                  groupValue: _selectedViewIndex,
+                  onValueChanged: (value) {
+                    setState(() => _selectedViewIndex = value);
+                  },
+                ),
+                _selectedViewIndex == 0
+                    ? InfoView(widget.id)
+                    : TriviaView(widget.id),
+              ],
+            ),
+          ),
         ],
       ),
     );

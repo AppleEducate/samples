@@ -29,12 +29,14 @@ class SearchBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              CupertinoIcons.search,
-              color: Styles.searchIconColor,
+            ExcludeSemantics(
+              child: Icon(
+                CupertinoIcons.search,
+                color: Styles.searchIconColor,
+              ),
             ),
             Expanded(
-              child: EditableText(
+              child: CupertinoTextField(
                 controller: controller,
                 focusNode: focusNode,
                 style: Styles.searchText,
@@ -47,6 +49,7 @@ class SearchBar extends StatelessWidget {
               },
               child: Icon(
                 CupertinoIcons.clear_thick_circled,
+                semanticLabel: 'Clear search terms',
                 color: Styles.searchIconColor,
               ),
             ),

@@ -6,19 +6,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:veggieseasons/data/model.dart';
+import 'package:veggieseasons/data/app_state.dart';
+import 'package:veggieseasons/data/preferences.dart';
 import 'package:veggieseasons/data/veggie.dart';
 import 'package:veggieseasons/styles.dart';
-import 'package:veggieseasons/widgets/veggie_headline.dart';
+import 'package:veggieseasons/widgets/veggie_card.dart';
 
 class ListScreen extends StatelessWidget {
-  List<Widget> _generateVeggieRows(List<Veggie> veggies) {
-    final cards = new List<Widget>();
+  List<Widget> _generateVeggieRows(
+    List<Veggie> veggies,
+    Preferences prefs,
+    { bool inSeason = true }
+  ) {
+    final cards = List<Widget>();
 
     for (Veggie veggie in veggies) {
       cards.add(Padding(
         padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0),
-        child: VeggieHeadline(veggie),
+        child: FutureBuilder<Set<VeggieCategory>>(
+            future: prefs.preferredCategories,
+            builder: (context, snapshot) {
+              final data = snapshot.data ?? Set<VeggieCategory>();
+              return VeggieCard(veggie, inSeason, data.contains(veggie.category));
+            }),
       ));
     }
 
@@ -29,8 +39,11 @@ class ListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoTabView(
       builder: (context) {
-        String dateString = DateFormat.yMMMMd("en_US").format(DateTime.now());
-        final model = ScopedModel.of<AppState>(context, rebuildOnChange: true);
+        String dateString = DateFormat("MMMM y").format(DateTime.now());
+        final appState =
+            ScopedModel.of<AppState>(context, rebuildOnChange: true);
+        final prefs =
+            ScopedModel.of<Preferences>(context, rebuildOnChange: true);
 
         final rows = <Widget>[];
 
@@ -47,7 +60,7 @@ class ListScreen extends StatelessWidget {
           ),
         );
 
-        rows.addAll(_generateVeggieRows(model.availableVeggies));
+        rows.addAll(_generateVeggieRows(appState.availableVeggies, prefs));
 
         rows.add(
           Padding(
@@ -56,7 +69,7 @@ class ListScreen extends StatelessWidget {
           ),
         );
 
-        rows.addAll(_generateVeggieRows(model.unavailableVeggies));
+        rows.addAll(_generateVeggieRows(appState.unavailableVeggies, prefs, inSeason: false));
 
         return DecoratedBox(
           decoration: BoxDecoration(color: Color(0xffffffff)),
