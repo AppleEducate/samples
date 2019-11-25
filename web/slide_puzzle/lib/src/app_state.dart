@@ -1,13 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'core/puzzle_animator.dart';
-import 'flutter.dart';
+import 'package:flutter/material.dart';
 import 'shared_theme.dart';
 
 abstract class AppState {
   TabController get tabController;
+
+  Animation<Offset> get shuffleOffsetAnimation;
 
   PuzzleProxy get puzzle;
 

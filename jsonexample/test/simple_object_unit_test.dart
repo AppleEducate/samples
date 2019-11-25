@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: strong_mode_implicit_dynamic_list_literal
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jsonexample/built_value/built_simple_object.dart';
 import 'package:jsonexample/built_value/built_value_serializers.dart';
@@ -22,9 +24,9 @@ void main() {
     'aString': 'Blah, blah, blah.',
     'anInt': 1,
     'aDouble': 1.0,
-    'aListOfStrings': [],
-    'aListOfInts': [],
-    'aListOfDoubles': []
+    'aListOfStrings': <String>[],
+    'aListOfInts': <int>[],
+    'aListOfDoubles': <double>[]
   };
 
   const unexpectedPropertiesJson = <String, dynamic>{
@@ -71,9 +73,9 @@ void main() {
       expect(simpleObject.aString, "Blah, blah, blah.");
       expect(simpleObject.anInt, 1);
       expect(simpleObject.aDouble, 1.0);
-      expect(simpleObject.aListOfStrings, []);
-      expect(simpleObject.aListOfInts, []);
-      expect(simpleObject.aListOfDoubles, []);
+      expect(simpleObject.aListOfStrings, <String>[]);
+      expect(simpleObject.aListOfInts, <int>[]);
+      expect(simpleObject.aListOfDoubles, <double>[]);
     });
 
     test('Extra properties', () {
@@ -122,9 +124,9 @@ void main() {
       expect(simpleObject.aString, "Blah, blah, blah.");
       expect(simpleObject.anInt, 1);
       expect(simpleObject.aDouble, 1.0);
-      expect(simpleObject.aListOfStrings, []);
-      expect(simpleObject.aListOfInts, []);
-      expect(simpleObject.aListOfDoubles, []);
+      expect(simpleObject.aListOfStrings, <String>[]);
+      expect(simpleObject.aListOfInts, <int>[]);
+      expect(simpleObject.aListOfDoubles, <double>[]);
     });
 
     test('Unexpected properties are ignored', () {
@@ -176,9 +178,9 @@ void main() {
       expect(simpleObject.aString, "Blah, blah, blah.");
       expect(simpleObject.anInt, 1);
       expect(simpleObject.aDouble, 1.0);
-      expect(simpleObject.aListOfStrings, []);
-      expect(simpleObject.aListOfInts, []);
-      expect(simpleObject.aListOfDoubles, []);
+      expect(simpleObject.aListOfStrings, <String>[]);
+      expect(simpleObject.aListOfInts, <int>[]);
+      expect(simpleObject.aListOfDoubles, <double>[]);
     });
 
     test('Unexpected properties are ignored', () {

@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'app_state.dart';
 import 'core/puzzle_animator.dart';
-import 'flutter.dart';
+import 'frame_nanny.dart';
 import 'shared_theme.dart';
 import 'theme_plaster.dart';
 import 'theme_seattle.dart';
@@ -17,6 +17,10 @@ class PuzzleHomeState extends State
     implements AppState {
   TabController _tabController;
   AnimationController _controller;
+  Animation<Offset> _shuffleOffsetAnimation;
+
+  @override
+  Animation<Offset> get shuffleOffsetAnimation => _shuffleOffsetAnimation;
 
   @override
   final PuzzleAnimator puzzle;
@@ -26,6 +30,8 @@ class PuzzleHomeState extends State
 
   @override
   TabController get tabController => _tabController;
+
+  final _nanny = FrameNanny();
 
   SharedTheme _currentTheme;
 
@@ -70,6 +76,7 @@ class PuzzleHomeState extends State
       duration: const Duration(milliseconds: 200),
     );
 
+    _shuffleOffsetAnimation = _controller.drive(const _Shake());
     _tabController = TabController(vsync: this, length: _themeDataCache.length);
 
     _tabController.addListener(() {
@@ -96,8 +103,7 @@ class PuzzleHomeState extends State
   }
 
   @override
-  Widget build(BuildContext context) =>
-      LayoutBuilder(builder: _currentTheme.build);
+  Widget build(BuildContext context) => _currentTheme.build(context);
 
   @override
   void dispose() {
@@ -114,9 +120,8 @@ class PuzzleHomeState extends State
     _ensureTicking();
     if (e == PuzzleEvent.noop) {
       assert(e == PuzzleEvent.noop);
-      _controller
-        ..reset()
-        ..forward();
+      _controller.reset();
+      _controller.forward();
     }
     setState(() {
       // noop
@@ -143,7 +148,7 @@ class PuzzleHomeState extends State
     }
 
     _tickerTimeSinceLastEvent += delta;
-    puzzle.update(delta > _maxFrameDuration ? _maxFrameDuration : delta);
+    puzzle.update(_nanny.tick(delta));
 
     if (!puzzle.stable) {
       animationNotifier.animate();
@@ -165,6 +170,13 @@ class PuzzleHomeState extends State
   }
 }
 
+class _Shake extends Animatable<Offset> {
+  const _Shake();
+
+  @override
+  Offset transform(double t) => Offset(0.01 * math.sin(t * math.pi * 3), 0);
+}
+
 class _AnimationNotifier extends ChangeNotifier implements AnimationNotifier {
   _AnimationNotifier();
 
@@ -173,5 +185,3 @@ class _AnimationNotifier extends ChangeNotifier implements AnimationNotifier {
     notifyListeners();
   }
 }
-
-const _maxFrameDuration = Duration(milliseconds: 34);

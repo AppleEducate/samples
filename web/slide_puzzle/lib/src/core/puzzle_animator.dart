@@ -1,7 +1,3 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 import 'dart:math' show Point, Random;
 
@@ -169,7 +165,7 @@ class PuzzleAnimator implements PuzzleProxy {
       final delta = _puzzle.openPosition() - _puzzle.coordinatesOf(tileValue);
       deltaDouble = Point(delta.x.toDouble(), delta.y.toDouble());
     }
-    deltaDouble *= 0.5 / deltaDouble.magnitude;
+    deltaDouble *= (0.5 / deltaDouble.magnitude);
 
     _locations[tileValue].kick(deltaDouble);
   }

@@ -1,9 +1,6 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+import 'package:flutter/material.dart';
 
 import 'app_state.dart';
-import 'flutter.dart';
 import 'shared_theme.dart';
 import 'widgets/decoration_image_plus.dart';
 
@@ -44,7 +41,7 @@ class ThemeSeattle extends SharedTheme {
         puzzleHeight: puzzle.height,
         pieceIndex: i,
         fit: BoxFit.cover,
-        image: const AssetImage('seattle.jpg'));
+        image: const AssetImage('asset/seattle.jpg'));
 
     final correctPosition = puzzle.isCorrectPosition(i);
     final content = createInk(
@@ -61,12 +58,12 @@ class ThemeSeattle extends SharedTheme {
                 style: TextStyle(
                   fontWeight: FontWeight.normal,
                   color: correctPosition ? Colors.white : Colors.black,
-                  fontSize: small ? 25 : 42,
+                  fontSize: 42,
                 ),
               ),
             ),
       image: decorationImage,
-      padding: EdgeInsets.all(small ? 20 : 32),
+      padding: const EdgeInsets.all(32),
     );
 
     return createButton(i, content);

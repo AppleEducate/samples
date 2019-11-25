@@ -1,9 +1,6 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+import 'package:flutter/material.dart';
 
 import 'app_state.dart';
-import 'flutter.dart';
 import 'shared_theme.dart';
 
 const _accentBlue = Color(0xff000579e);
@@ -53,7 +50,7 @@ class ThemeSimple extends SharedTheme {
           style: TextStyle(
             color: Colors.white,
             fontWeight: correctPosition ? FontWeight.bold : FontWeight.normal,
-            fontSize: small ? 30 : 49,
+            fontSize: 49,
           ),
         ),
       ),

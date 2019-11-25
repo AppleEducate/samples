@@ -1,10 +1,7 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+import 'package:flutter/material.dart';
 
 import 'app_state.dart';
 import 'core/puzzle_animator.dart';
-import 'flutter.dart';
 import 'puzzle_flow_delegate.dart';
 import 'widgets/material_interior_alt.dart';
 
@@ -63,120 +60,92 @@ abstract class SharedTheme {
         ),
       );
 
-  double _previousConstraintWidth;
-  bool _small;
-
-  bool get small => _small;
-
-  void _updateConstraints(BoxConstraints constraints) {
-    const _smallWidth = 580;
-
-    final constraintWidth =
-        constraints.hasBoundedWidth ? constraints.maxWidth : 1000.0;
-
-    if (constraintWidth == _previousConstraintWidth) {
-      assert(_small != null);
-      return;
-    }
-
-    _previousConstraintWidth = constraintWidth;
-
-    if (_previousConstraintWidth < _smallWidth) {
-      _small = true;
-    } else {
-      _small = false;
-    }
-  }
-
-  Widget build(BuildContext context, BoxConstraints constraints) {
-    _updateConstraints(constraints);
-    return Material(
-        child: Stack(
-      children: <Widget>[
-        const SizedBox.expand(
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: Image(
-              image: AssetImage('seattle.jpg'),
-            ),
-          ),
-        ),
-        AnimatedContainer(
-          duration: _puzzleAnimationDuration,
-          color: puzzleThemeBackground,
-          child: Center(
-            child: _styledWrapper(
-              SizedBox(
-                width: 580,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.black26,
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: TabBar(
-                        controller: _appState.tabController,
-                        labelPadding: const EdgeInsets.fromLTRB(0, 20, 0, 12),
-                        labelColor: puzzleAccentColor,
-                        indicatorColor: puzzleAccentColor,
-                        indicatorWeight: 1.5,
-                        unselectedLabelColor: Colors.black.withOpacity(0.6),
-                        tabs: _appState.themeData
-                            .map((st) => Text(
-                                  st.name.toUpperCase(),
-                                  style: const TextStyle(
-                                    letterSpacing: 0.5,
-                                  ),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                    Container(
-                      constraints: const BoxConstraints.tightForFinite(),
-                      padding: const EdgeInsets.all(10),
-                      child: Flow(
-                        delegate: PuzzleFlowDelegate(
-                          small ? const Size(90, 90) : const Size(140, 140),
-                          puzzle,
-                          _appState.animationNotifier,
-                        ),
-                        children: List<Widget>.generate(
-                          puzzle.length,
-                          _tileButton,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Colors.black26, width: 1),
-                        ),
-                      ),
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        bottom: 6,
-                        top: 2,
-                        right: 10,
-                      ),
-                      child: Row(children: _bottomControls(context)),
-                    )
-                  ],
-                ),
+  Widget build(BuildContext context) => Material(
+          child: Stack(
+        children: <Widget>[
+          const SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Image(
+                image: AssetImage('asset/seattle.jpg'),
               ),
             ),
           ),
-        )
-      ],
-    ));
-  }
+          AnimatedContainer(
+            duration: _puzzleAnimationDuration,
+            color: puzzleThemeBackground,
+            child: Center(
+              child: _styledWrapper(
+                SizedBox(
+                  width: 580,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.black26,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        child: TabBar(
+                          controller: _appState.tabController,
+                          labelPadding: const EdgeInsets.fromLTRB(0, 20, 0, 12),
+                          labelColor: puzzleAccentColor,
+                          indicatorColor: puzzleAccentColor,
+                          indicatorWeight: 1.5,
+                          unselectedLabelColor: Colors.black.withOpacity(0.6),
+                          tabs: _appState.themeData
+                              .map((st) => Text(
+                                    st.name.toUpperCase(),
+                                    style: const TextStyle(
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                      Container(
+                        constraints: const BoxConstraints.tightForFinite(),
+                        padding: const EdgeInsets.all(10),
+                        child: Flow(
+                          delegate: PuzzleFlowDelegate(
+                            _tileSize,
+                            puzzle,
+                            _appState.animationNotifier,
+                          ),
+                          children: List<Widget>.generate(
+                            puzzle.length,
+                            _tileButton,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            top: BorderSide(color: Colors.black26, width: 1),
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(
+                          left: 10,
+                          bottom: 6,
+                          top: 2,
+                          right: 10,
+                        ),
+                        child: Row(children: _bottomControls(context)),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ));
 
   Duration get _puzzleAnimationDuration => kThemeAnimationDuration * 3;
 
@@ -188,6 +157,8 @@ abstract class SharedTheme {
         color: puzzleBackgroundColor,
         child: child,
       );
+
+  Size get _tileSize => const Size(140.0, 140.0);
 
   void Function(bool newValue) get _setAutoPlay {
     if (puzzle.solved) {
